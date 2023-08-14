@@ -15,6 +15,8 @@ namespace Calculator_jyw_
 
         private string inputText = "";
         private string resultText = "";
+        private string Operator;
+        private bool doublePointEntered = false;
         Stack<string> operatorStack = new Stack<string>();
         List<string> outputList = new List<string>();
 
@@ -49,8 +51,8 @@ namespace Calculator_jyw_
         public CalculatorViewModel()
         {
             NumberButtonCommand = new RelayCommand(NumberButtonCommandExecute);
-            //OperatorButtonCommand = new RelayCommand(OperatorButtonCommandExecute);
-            //ResultButtonCommand = new RelayCommand(ResultButtonCommandExecute);
+            OperatorButtonCommand = new RelayCommand(OperatorButtonCommandExecute);
+            ResultButtonCommand = new RelayCommand(ResultButtonCommandExecute);
             ClearButtonCommand = new RelayCommand(ClearButtonCommandExecute);
             ShowHistoryCommand = new RelayCommand(ShowHistoryExecute);
         }
@@ -70,7 +72,7 @@ namespace Calculator_jyw_
             Dictionary<string, int> precedence = new Dictionary<string, int>
             {
                 { "+", 1 }, { "-", 1 },
-                { "*", 2 }, { "/", 2 }
+                { "*", 2 }, { "/", 2 }, { "x", 2 }
             };
             string[] tokens = infixExpression.Split(' ');
 
@@ -134,12 +136,15 @@ namespace Calculator_jyw_
 
             return stack.Pop();
         }
+
+  
         private int PerformOperation(int operand1, int operand2, string operation)
         {
             switch (operation)
             {
                 case "+": return operand1 + operand2;
                 case "-": return operand1 - operand2;
+                case "x": return operand1 * operand2;
                 case "*": return operand1 * operand2;
                 case "/": return operand1 / operand2;
                 default: throw new ArgumentException("Invalid operation: " + operation);
@@ -148,7 +153,23 @@ namespace Calculator_jyw_
 
         private void NumberButtonCommandExecute(object parameter)
         {
-                inputText = $"{inputText}{parameter}";
+
+            if (parameter is string number)
+            {
+                if (number == ".")
+                {
+                    if (!doublePointEntered)
+                    {
+                        InputText = $"{inputText}{number}";
+                        doublePointEntered = true;
+                    }
+                }
+                else
+                {
+                    InputText = $"{inputText}{number}";
+                }
+            }
+            
         }
 
         /*
@@ -160,29 +181,13 @@ namespace Calculator_jyw_
         * @warning 없음
         */
 
-        //public void operatorbuttoncommandexecute(object parameter)
-        //{
-           
-           
-        //    if (string.isnullorempty(operator))
-        //    {
-        //        resultbuttoncommandexecute(null);
-        //        try
-        //        {
-        //            leftoperand = decimal.parse(inputtext);
-        //            resulttext = $"{leftoperand}{parameter}";
-        //            operator = parameter.tostring();
-        //            inputtext = "";
+        public void OperatorButtonCommandExecute(object parameter)
+        {
+            doublePointEntered = false;
+            Operator = parameter.ToString();
+            InputText = $"{inputText}{" "}{parameter}{" "}";
 
-        //        }
-        //        catch (formatexception)
-        //        {
-        //            resulttext = "error: wrong value";
-        //        }
-
-        //    }
-        //    return;
-        //}
+        }
         /*
         * @brief = 버튼을 누르면 resulttextbox에 식이 입력되고, inputtextbox에 결과값이 입력됩니다.  
         * @param parameter: 사용되지 않음
@@ -191,7 +196,7 @@ namespace Calculator_jyw_
         * 2023-08-10|조예원|설명작성
         * @warning 없음
         */
-   
+
         /*
         * @brief c 버튼을 누르면 inputtextbox와 resulttextbox가 비워집니다.  
         * @param parameter: 사용되지 않음
@@ -202,9 +207,18 @@ namespace Calculator_jyw_
         */
         private void ClearButtonCommandExecute(object parameter)
         {
-            inputText = "";
-            resultText = "";
+            InputText = "";
+            ResultText = "";
+            Operator = null;
          
+        }
+
+        private void ResultButtonCommandExecute(object parameter)
+        {   string tmp = inputText;
+            InputText = ResultText;
+            InputText=CalculatePostfix(ConvertToPostfix(tmp)).ToString();
+
+
         }
         /*
         * @brief 바뀐 프로퍼티가 있으면 그 변화를 반영합니다.  
