@@ -7,11 +7,20 @@
         mc:Ignorable="d"
         Title="History" 
         Height="400" Width="300">
-
+    <Window.DataContext>
+        <local:CalculatorViewModel/>
+    </Window.DataContext>
     <Grid  Height="300" VerticalAlignment="Bottom">
         <ScrollViewer Height="300">
             <StackPanel>
-                <TextBlock Text="1"/>
+
+                <ListBox ItemsSource="{Binding OutputList}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
 
             </StackPanel>
 
