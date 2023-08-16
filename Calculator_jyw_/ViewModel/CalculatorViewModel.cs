@@ -70,7 +70,7 @@ namespace Calculator_jyw_
         }
 
 
-        private string ConvertToPostfix(string infixExpression)
+        protected string ConvertToPostfix(string infixExpression)
         {
             Dictionary<string, int> precedence = new Dictionary<string, int>
             {
@@ -119,7 +119,7 @@ namespace Calculator_jyw_
     }
 
        
-        private double CalculatePostfix(string postfixExpression)
+        protected double CalculatePostfix(string postfixExpression)
         {
             Stack<double> stack = new Stack<double>();
 
@@ -147,7 +147,7 @@ namespace Calculator_jyw_
         }
 
   
-        private double PerformOperation(double operand1, double operand2, string operation)
+        protected double PerformOperation(double operand1, double operand2, string operation)
         {
             switch (operation)
             {
@@ -167,7 +167,7 @@ namespace Calculator_jyw_
         * 2023-08-10|조예원|설명작성
         * @warning 없음
         */
-        private void NumberButtonCommandExecute(object parameter)
+        protected void NumberButtonCommandExecute(object parameter)
         {
 
             if (parameter is string number)
@@ -197,7 +197,7 @@ namespace Calculator_jyw_
         * @warning 없음
         */
 
-        public void OperatorButtonCommandExecute(object parameter)
+        protected void OperatorButtonCommandExecute(object parameter)
         {
             doublePointEntered = false;
 
@@ -229,7 +229,7 @@ namespace Calculator_jyw_
         * 2023-08-10|조예원|설명작성
         * @warning 없음
         */
-        private void ClearButtonCommandExecute(object parameter)
+        protected void ClearButtonCommandExecute(object parameter)
         {
             InputText = "";
             ResultText = "";
@@ -240,7 +240,7 @@ namespace Calculator_jyw_
 
         }
 
-        private void ResultButtonCommandExecute(object parameter)
+        protected void ResultButtonCommandExecute(object parameter)
         {
            
             string tmp = InputText;
@@ -262,7 +262,7 @@ namespace Calculator_jyw_
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private void ShowHistoryExecute(object parameter)
+        protected void ShowHistoryExecute(object parameter)
         {
             History history = new History();
             history.ShowDialog();

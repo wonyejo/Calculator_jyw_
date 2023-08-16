@@ -79,6 +79,7 @@
       <DependentUpon>History.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\CalculatorViewModel.cs" />
+    <Compile Include="ViewModel\DerivedCalculatorVM.cs" />
     <Compile Include="ViewModel\RelayCommand.cs" />
     <Page Include="History.xaml">
       <SubType>Designer</SubType>
