@@ -22,6 +22,7 @@ namespace Calculator_jyw_
         public History()
         {
             InitializeComponent();
+            
         }
     }
 }

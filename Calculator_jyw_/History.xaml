@@ -7,24 +7,26 @@
         mc:Ignorable="d"
         Title="History" 
         Height="400" Width="300">
+    
     <Window.DataContext>
         <local:CalculatorViewModel/>
     </Window.DataContext>
+    
     <Grid  Height="300" VerticalAlignment="Bottom">
-        <ScrollViewer Height="300">
-            <StackPanel>
+        <ListBox ItemsSource="{Binding ResultList}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding ResultList}" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
 
-                <ListBox ItemsSource="{Binding OutputList}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding}" />
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-
-            </StackPanel>
-
-
-        </ScrollViewer>
+        <!--<ItemsControl ItemsSource="{Binding ResultList}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>-->
     </Grid>
 </Window>

@@ -10,7 +10,8 @@
         <local:CalculatorViewModel/>
     </Window.DataContext>
     <Window.InputBindings>
-        <KeyBinding Key="Enter" Command="{Binding ResultButtonCommand}" />
+        <KeyBinding Key="Enter" Command="{Binding ResultButtonCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=EventArgs}" />
+        <KeyBinding Key="Esc" Command="{Binding ClearButtonCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=EventArgs}" />
     </Window.InputBindings>
     <Grid>
         <Button x:Name="HistoryBtn"

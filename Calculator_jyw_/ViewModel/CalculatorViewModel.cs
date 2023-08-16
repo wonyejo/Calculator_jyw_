@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.ComponentModel;
-
+using System.Collections.ObjectModel;
 
 namespace Calculator_jyw_
 {
@@ -13,15 +13,16 @@ namespace Calculator_jyw_
     public class CalculatorViewModel : INotifyPropertyChanged
     {
 
-        public const Double Epsilon = 4.94065645841247E-324;
-
-
         private string inputText = "";
         private string resultText = "";
         private string Operator;
         private bool doublePointEntered = false;
         private Stack<string> operatorStack = new Stack<string>();
         private List<string> outputList = new List<string>();
+        private ObservableCollection<string> resultList = new ObservableCollection<string>();
+        
+
+
         public string InputText
         {
             get { return inputText; }
@@ -40,13 +41,13 @@ namespace Calculator_jyw_
                 OnPropertyChanged("resultText");
             }
         }
-        public List<string> OutputList
+        public ObservableCollection<string> ResultList
         {
-            get { return outputList; }
+            get { return resultList; }
             set
             {
-                outputList = value;
-                OnPropertyChanged("outputList");
+                resultList = value;
+                OnPropertyChanged(nameof(ResultList));
             }
         }
 
@@ -64,6 +65,8 @@ namespace Calculator_jyw_
             ResultButtonCommand = new RelayCommand(ResultButtonCommandExecute);
             ClearButtonCommand = new RelayCommand(ClearButtonCommandExecute);
             ShowHistoryCommand = new RelayCommand(ShowHistoryExecute);
+
+            //resultList.CollectionChanged += ResultList.CollectionChanged;
         }
 
 
@@ -74,7 +77,7 @@ namespace Calculator_jyw_
                 { "+", 1 }, { "-", 1 },
                 { "*", 2 }, { "/", 2 }, { "x", 2 }
             };
-            string[] tokens = infixExpression.Split(' ');
+            string[] tokens = infixExpression.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (string token in tokens)
             {
@@ -115,32 +118,7 @@ namespace Calculator_jyw_
         
     }
 
-        //private double AdjustValue(double value, double epsilon)
-        //{
-        //    double roundedValue = Math.Round(value, 2); // 예시로 소수점 아래 2자리에서 반올림
-        //    double ceilingValue = Math.Ceiling(value * 100) / 100; // 소수점 아래 2자리에서 올림
-        //    double floorValue = Math.Floor(value * 100) / 100; // 소수점 아래 2자리에서 내림
-
-        //    double diffFromRounded = Math.Abs(value - roundedValue);
-        //    double diffFromCeiling = Math.Abs(value - ceilingValue);
-        //    double diffFromFloor = Math.Abs(value - floorValue);
-
-        //    double minDiff = Math.Min(diffFromRounded, Math.Min(diffFromCeiling, diffFromFloor)); //이렇게 작은 수는 동일하게 취급하는데 어떻게 이걸로 부동 소수점 오차를 보정하나요?
-
-        //    if (minDiff < epsilon)
-        //    {
-        //        if (minDiff == diffFromRounded)
-        //            return roundedValue;
-        //        else if (minDiff == diffFromCeiling)
-        //            return ceilingValue;
-        //        else
-        //            return floorValue;
-        //    }
-        //    else
-        //    {
-        //        return value; // 그대로 반환
-        //    }
-        //}
+       
         private double CalculatePostfix(string postfixExpression)
         {
             Stack<double> stack = new Stack<double>();
@@ -149,6 +127,7 @@ namespace Calculator_jyw_
 
             foreach (string token in tokens)
             {
+               
                 if (double.TryParse(token, out double number))
                 {
                     stack.Push(number);
@@ -159,8 +138,7 @@ namespace Calculator_jyw_
                     double operand1 = stack.Pop();
                     double result = PerformOperation(operand1, operand2, token);
 
-                    //AdjustValue(result, Epsilon);
-
+           
                     stack.Push(result);
                 }
             }
@@ -223,16 +201,14 @@ namespace Calculator_jyw_
         {
             doublePointEntered = false;
 
-            if (!string.IsNullOrEmpty(Operator)) // 이전에 연산자가 입력되었을 경우
+            if (inputText.EndsWith(" ") || inputText.EndsWith("+") || inputText.EndsWith("-") ||inputText.EndsWith("*") || inputText.EndsWith("/"))
             {
-                // 이전 연산자를 지우고 새로운 연산자 입력
                 inputText = inputText.Remove(inputText.Length - 2);
-            
             }
-
-
+           
             Operator = parameter.ToString();
-            inputText=$"{inputText}{" "}{parameter}{" "}";
+            inputText = $"{inputText.Trim()} {parameter} "; // 불필요한 공백 제거 후 연산자 추가
+
             InputText = inputText;
 
         }
@@ -259,14 +235,19 @@ namespace Calculator_jyw_
             ResultText = "";
             Operator = null;
             doublePointEntered = false;
-         
+           
+
+
         }
 
         private void ResultButtonCommandExecute(object parameter)
-        {   string tmp = InputText;
+        {
+           
+            string tmp = InputText;
             ResultText = $"{InputText}{ " = " }";
             InputText=CalculatePostfix(ConvertToPostfix(tmp)).ToString();
-
+            ResultList.Add(ResultText+ InputText);
+            OnPropertyChanged(nameof(ResultList));
         }
         /*
         * @brief 바뀐 프로퍼티가 있으면 그 변화를 반영합니다.  
@@ -286,9 +267,6 @@ namespace Calculator_jyw_
             History history = new History();
             history.ShowDialog();
         }
-
-
-      
 
         #region [중첩된 클래스]
         public event PropertyChangedEventHandler PropertyChanged;
