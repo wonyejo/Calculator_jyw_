@@ -5,31 +5,29 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Calculator_jyw_"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="300">
+        Title="MainWindow" Height="450" Width="700">
     <Window.DataContext>
         <local:CalculatorViewModel/>
     </Window.DataContext>
+
+    
     <Window.InputBindings>
         <KeyBinding Key="Enter" Command="{Binding ResultButtonCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=EventArgs}" />
         <KeyBinding Key="Esc" Command="{Binding ClearButtonCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=EventArgs}" />
     </Window.InputBindings>
+
     <Grid>
-        <Button x:Name="HistoryBtn"
-                Content="🕐" Width="Auto" Height="30"
-			    Background="white"
-				VerticalAlignment="Top"
-				Margin="227,32,10,0"
-                Command="{Binding ShowHistoryCommand}"/>
-
-
         <TextBox x:Name="ResultTextBox" 
                  Style="{StaticResource textBox_style}"
 				 TextAlignment="Right" 
 				 HorizontalAlignment="Left"
 				 Width="253" Height="23"
-				 TextWrapping="Wrap" Text="{Binding ResultText, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
+				 TextWrapping="Wrap" 
 				 VerticalAlignment="Top"
-				 Margin="22,93,0,0"/>
+                 Text="{Binding ResultText, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
+				 Margin="22,93,0,0">
+            
+        </TextBox>
 
         <TextBox  x:Name="InputTextBox" 
                   Style="{StaticResource textBox_style}"
@@ -38,7 +36,9 @@
                   Width="253" Height="48" 
                   Margin="22,121,0,0" 
                   TextWrapping="Wrap" Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" 
-                  VerticalAlignment="Top" />
+                  VerticalAlignment="Top" >
+        
+        </TextBox>
 
         <WrapPanel HorizontalAlignment="Left" Height="180" Margin="22,185,0,0" VerticalAlignment="Top" Width="190" RenderTransformOrigin="0.5,0.5">
 
@@ -67,6 +67,13 @@
 
         </StackPanel>
 
-
+        <ListView ItemsSource="{Binding ResultList}" SelectedItem="{Binding SelectedResult}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="359,0,10.333,21.667" Height="389">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Expression" DisplayMemberBinding="{Binding Expression}" Width="150"/>
+                    <GridViewColumn Header="Result" DisplayMemberBinding="{Binding Result}" Width="100"/>
+                </GridView>
+            </ListView.View>
+            </ListView>
     </Grid>
 </Window>

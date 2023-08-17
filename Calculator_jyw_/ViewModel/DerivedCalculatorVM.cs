@@ -30,8 +30,20 @@ namespace Calculator_jyw_.ViewModel
             string tmp = InputText;
             ResultText = $"{InputText} = ";
             InputText = CalculatePostfix(ConvertToPostfix(tmp)).ToString();
-            ResultList.Add(ResultText + InputText);
+        
             OnPropertyChanged(nameof(ResultList));
+        }
+        protected double PerformOperation(double operand1, double operand2, string operation)
+        {
+            switch (operation)
+            {
+                case "+": return operand1 + operand2;
+                case "-": return operand1 - operand2;
+                case "x": return operand1 * operand2;
+                case "*": return operand1 * operand2;
+                case "/": return operand1 / operand2;
+                default: throw new ArgumentException("Invalid operation: " + operation);
+            }
         }
     }
 }

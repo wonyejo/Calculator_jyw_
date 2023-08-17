@@ -23,6 +23,7 @@ namespace Calculator_jyw_
         public MainWindow()
         {
             InitializeComponent();
+            
         }
     }
 }
