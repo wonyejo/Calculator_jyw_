@@ -1,49 +1,57 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Calculator_jyw_.ViewModel
+namespace Calculator_jyw_
 {
-    class DerivedCalculatorVM: CalculatorViewModel
+    public class DerivedCalculatorVM : CalculatorViewModel
     {
-        // + 연산자 재정의
-        public static DerivedCalculatorVM operator +(DerivedCalculatorVM calculator, double value)
+        public double operand;
+
+        public double Operand {
+            get { return operand; }
+            set
+            {
+                operand = value;
+                OnPropertyChanged(nameof(Operand));
+            }
+        }
+
+        public DerivedCalculatorVM()
         {
-            calculator.InputText = $"{calculator.InputText} + {value}";
-            calculator.Calculate();
-            return calculator;
+            
+        }
+        public DerivedCalculatorVM(double operand)
+        {
+            this.operand = operand;
+        }
+
+
+        // + 연산자 재정의
+        public static DerivedCalculatorVM operator +(DerivedCalculatorVM operand1, DerivedCalculatorVM operand2 )
+        {
+            DerivedCalculatorVM result = new DerivedCalculatorVM(operand1.operand + operand2.operand);
+            return result;
         }
 
         // - 연산자 재정의
-        public static DerivedCalculatorVM operator -(DerivedCalculatorVM calculator, double value)
+        public static DerivedCalculatorVM operator -(DerivedCalculatorVM operand1, DerivedCalculatorVM operand2)
         {
-            calculator.InputText = $"{calculator.InputText} - {value}";
-            calculator.Calculate();
-            return calculator;
+            DerivedCalculatorVM result = new DerivedCalculatorVM(operand1.operand - operand2.operand);
+            return result;
         }
 
-        // 계산 메서드
+        
+
+        // 계산 메서드 수정
         private void Calculate()
         {
             string tmp = InputText;
             ResultText = $"{InputText} = ";
-            InputText = CalculatePostfix(ConvertToPostfix(tmp)).ToString();
-        
+
+            InputText = CalculatePostfix_(ConvertToPostfix(tmp)).ToString();
+            OnPropertyChanged(nameof(InputText)); // InputText 업데이트를 위해 OnPropertyChanged 호출
             OnPropertyChanged(nameof(ResultList));
         }
-        protected double PerformOperation(double operand1, double operand2, string operation)
-        {
-            switch (operation)
-            {
-                case "+": return operand1 + operand2;
-                case "-": return operand1 - operand2;
-                case "x": return operand1 * operand2;
-                case "*": return operand1 * operand2;
-                case "/": return operand1 / operand2;
-                default: throw new ArgumentException("Invalid operation: " + operation);
-            }
-        }
+
+
     }
 }

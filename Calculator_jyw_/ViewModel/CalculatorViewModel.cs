@@ -57,7 +57,7 @@ namespace Calculator_jyw_
 
         private string inputText = "";
         private string resultText = "";
-        private string Operator;
+        protected string Operator;
         private bool doublePointEntered = false;
         private Stack<string> operatorStack = new Stack<string>();
         private List<string> outputList = new List<string>();
@@ -103,7 +103,7 @@ namespace Calculator_jyw_
                 // SelectedResult가 변경될 때 InputText와 ResultText 업데이트
                 if (selectedResult != null)
                 {
-                    ResultText = selectedResult.Expression;
+                    ResultText = selectedResult.Expression+" = ";
                     InputText = selectedResult.Result;
                 }
             }
@@ -113,7 +113,7 @@ namespace Calculator_jyw_
         public ICommand ResultButtonCommand { get; private set; }
         public ICommand ClearButtonCommand { get; private set; }
         public ICommand ShowHistoryCommand { get; private set; }
-        public ICommand ShowSelectedResultCommand { get; private set; }
+      
       
         public CalculatorViewModel()
         {
@@ -121,7 +121,7 @@ namespace Calculator_jyw_
             OperatorButtonCommand = new RelayCommand(OperatorButtonCommandExecute);
             ResultButtonCommand = new RelayCommand(ResultButtonCommandExecute);
             ClearButtonCommand = new RelayCommand(ClearButtonCommandExecute);
-            ShowSelectedResultCommand = new RelayCommand(ShowSelectedResultCommandExecute);
+            
          
         }
 
@@ -173,10 +173,10 @@ namespace Calculator_jyw_
             return string.Join(" ", outputList);
 
         }
-
         protected double CalculatePostfix(string postfixExpression)
         {
             Stack<double> stack = new Stack<double>();
+
 
             string[] tokens = postfixExpression.Split(' ');
 
@@ -193,27 +193,70 @@ namespace Calculator_jyw_
                     double operand1 = stack.Pop();
                     double result = PerformOperation(operand1, operand2, token);
 
-
                     stack.Push(result);
                 }
             }
 
             return stack.Pop();
         }
+        protected DerivedCalculatorVM CalculatePostfix_(string postfixExpression)
+        {
+            Stack<double> stack = new Stack<double>();
+            
 
+            string[] tokens = postfixExpression.Split(' ');
+
+            foreach (string token in tokens)
+            {
+
+                if (double.TryParse(token, out double number))
+                {
+                    stack.Push(number);
+                }
+                else
+                {
+
+                    DerivedCalculatorVM operand1 = new DerivedCalculatorVM(stack.Pop());
+                    DerivedCalculatorVM operand2 = new DerivedCalculatorVM(stack.Pop());
+                    DerivedCalculatorVM result = PerformOperation_(operand1, operand2, token);
+                     
+                    stack.Push(result.operand);
+                }
+            }
+            DerivedCalculatorVM result_ = new DerivedCalculatorVM(stack.Pop());
+
+            return result_;
+
+
+
+        }
+        protected DerivedCalculatorVM PerformOperation_(DerivedCalculatorVM operand1, DerivedCalculatorVM operand2, string operation)
+                {
+                    switch (operation)
+                    {
+                        case "+": return operand1 + operand2;
+                        case "-": return operand1 - operand2;                
+                        default: throw new ArgumentException("Invalid operation: " + operation);
+                    }
+                }
 
         protected double PerformOperation(double operand1, double operand2, string operation)
         {
             switch (operation)
             {
-                case "+": return operand1 + operand2;
-                case "-": return operand1 - operand2;
+                case "+": return PerformOperation_(new DerivedCalculatorVM(operand1), new DerivedCalculatorVM(operand2), "+").operand;
+                case "-": return PerformOperation_(new DerivedCalculatorVM(operand1), new DerivedCalculatorVM(operand2), "-").operand;
                 case "x": return operand1 * operand2;
                 case "*": return operand1 * operand2;
                 case "/": return operand1 / operand2;
                 default: throw new ArgumentException("Invalid operation: " + operation);
             }
         }
+
+        
+
+
+
         /*
         * @brief 숫자 버튼을 누르면 InputTextBox에 해당 숫자가 입력됩니다.  
         * @param parameter: 누른 숫자의 값
@@ -252,7 +295,7 @@ namespace Calculator_jyw_
         * @warning 없음
         */
 
-        protected void OperatorButtonCommandExecute(object parameter)
+        protected virtual void OperatorButtonCommandExecute(object parameter)
         {
             doublePointEntered = false;
 
@@ -277,15 +320,7 @@ namespace Calculator_jyw_
         * @warning 없음
         */
 
-        protected void ShowSelectedResultCommandExecute(object parameter)
-        {
-            if (SelectedResult != null)
-            {
-                InputText = SelectedResult.Result;
-                ResultText = SelectedResult.Expression;
-                SelectedResult = null;
-            }
-        }
+  
 
         protected void ClearButtonCommandExecute(object parameter)
         {
@@ -310,6 +345,8 @@ namespace Calculator_jyw_
 
             ResultText = $"{InputText}{ " = " }";
             string expression = InputText;
+
+            
             InputText = CalculatePostfix(ConvertToPostfix(expression)).ToString();
             string result = inputText;
             CalculationEntry entry = new CalculationEntry

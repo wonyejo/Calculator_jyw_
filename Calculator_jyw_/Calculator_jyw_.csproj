@@ -77,7 +77,6 @@
     </ApplicationDefinition>
     <Compile Include="ViewModel\CalculatorViewModel.cs" />
     <Compile Include="ViewModel\DerivedCalculatorVM.cs" />
-    <Compile Include="ViewModel\MultConverter.cs" />
     <Compile Include="ViewModel\RelayCommand.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

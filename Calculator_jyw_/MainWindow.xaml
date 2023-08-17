@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="700">
     <Window.DataContext>
-        <local:CalculatorViewModel/>
+        <local:DerivedCalculatorVM/> 
     </Window.DataContext>
 
     
@@ -25,9 +25,7 @@
 				 TextWrapping="Wrap" 
 				 VerticalAlignment="Top"
                  Text="{Binding ResultText, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
-				 Margin="22,93,0,0">
-            
-        </TextBox>
+				 Margin="22,93,0,0"/>
 
         <TextBox  x:Name="InputTextBox" 
                   Style="{StaticResource textBox_style}"
@@ -37,7 +35,7 @@
                   Margin="22,121,0,0" 
                   TextWrapping="Wrap" Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" 
                   VerticalAlignment="Top" >
-        
+                  
         </TextBox>
 
         <WrapPanel HorizontalAlignment="Left" Height="180" Margin="22,185,0,0" VerticalAlignment="Top" Width="190" RenderTransformOrigin="0.5,0.5">

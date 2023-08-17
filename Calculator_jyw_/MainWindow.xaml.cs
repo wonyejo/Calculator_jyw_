@@ -24,6 +24,7 @@ namespace Calculator_jyw_
         {
             InitializeComponent();
             
+
         }
     }
 }
