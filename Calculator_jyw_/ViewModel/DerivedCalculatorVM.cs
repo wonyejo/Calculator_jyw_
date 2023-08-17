@@ -4,29 +4,35 @@ namespace Calculator_jyw_
 {
     public class DerivedCalculatorVM : CalculatorViewModel
     {
+        #region 필드
         public double operand;
+        #endregion
 
-        public double Operand {
-            get { return operand; }
-            set
-            {
-                operand = value;
-                OnPropertyChanged(nameof(Operand));
-            }
-        }
+        #region 속성
+         public double Operand {
+                    get { return operand; }
+                    set
+                    {
+                        operand = value;
+                        OnPropertyChanged(nameof(Operand));
+                    }
+                }
+        #endregion
 
+        #region 생성자
         public DerivedCalculatorVM()
         {
-            
+
         }
         public DerivedCalculatorVM(double operand)
         {
             this.operand = operand;
         }
+        #endregion
 
-
+        #region 메서드
         // + 연산자 재정의
-        public static DerivedCalculatorVM operator +(DerivedCalculatorVM operand1, DerivedCalculatorVM operand2 )
+        public static DerivedCalculatorVM operator +(DerivedCalculatorVM operand1, DerivedCalculatorVM operand2)
         {
             DerivedCalculatorVM result = new DerivedCalculatorVM(operand1.operand + operand2.operand);
             return result;
@@ -38,19 +44,8 @@ namespace Calculator_jyw_
             DerivedCalculatorVM result = new DerivedCalculatorVM(operand1.operand - operand2.operand);
             return result;
         }
+        #endregion
 
-        
-
-        // 계산 메서드 수정
-        private void Calculate()
-        {
-            string tmp = InputText;
-            ResultText = $"{InputText} = ";
-
-            InputText = CalculatePostfix_(ConvertToPostfix(tmp)).ToString();
-            OnPropertyChanged(nameof(InputText)); // InputText 업데이트를 위해 OnPropertyChanged 호출
-            OnPropertyChanged(nameof(ResultList));
-        }
 
 
     }

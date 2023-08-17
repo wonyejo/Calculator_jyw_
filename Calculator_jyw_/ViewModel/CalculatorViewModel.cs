@@ -8,53 +8,11 @@ using System.Windows.Input;
 namespace Calculator_jyw_
 {
 
-    public class CalculationEntry : INotifyPropertyChanged
-    {
-        private string expression;
-        private string result;
-
-        public string Expression
-        {
-            get { return expression; }
-            set
-            {
-                expression = value;
-                OnPropertyChanged(nameof(Expression));
-            }
-        }
-
-        public string Result
-        {
-            get { return result; }
-            set
-            {
-                result = value;
-                OnPropertyChanged(nameof(Result));
-            }
-        }
-        private CalculationEntry selectedEntry;
-
-        public CalculationEntry SelectedEntry
-        {
-            get { return selectedEntry; }
-            set
-            {
-                selectedEntry = value;
-                OnPropertyChanged(nameof(SelectedEntry));
-            }
-        }
-        // INotifyPropertyChanged 이벤트 정의
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        // PropertyChanged 이벤트 호출 메서드
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-    }
     public class CalculatorViewModel : INotifyPropertyChanged
     {
 
+
+        #region 필드
         private string inputText = "";
         private string resultText = "";
         protected string Operator;
@@ -63,7 +21,20 @@ namespace Calculator_jyw_
         private List<string> outputList = new List<string>();
         private ObservableCollection<CalculationEntry> resultList = new ObservableCollection<CalculationEntry>();
         private CalculationEntry selectedResult;
+        #endregion
 
+        #region 속성
+
+        public ICommand NumberButtonCommand { get; private set; }
+        public ICommand OperatorButtonCommand { get; private set; }
+        public ICommand ResultButtonCommand { get; private set; }
+        public ICommand ClearButtonCommand { get; private set; }
+        public ICommand ShowHistoryCommand { get; private set; }
+
+
+
+       
+        
         public string InputText
         {
             get { return inputText; }
@@ -92,7 +63,7 @@ namespace Calculator_jyw_
             }
         }
 
-      
+
         public CalculationEntry SelectedResult
         {
             get { return selectedResult; }
@@ -103,29 +74,25 @@ namespace Calculator_jyw_
                 // SelectedResult가 변경될 때 InputText와 ResultText 업데이트
                 if (selectedResult != null)
                 {
-                    ResultText = selectedResult.Expression+" = ";
+                    ResultText = selectedResult.Expression + " = ";
                     InputText = selectedResult.Result;
                 }
             }
         }
-        public ICommand NumberButtonCommand { get; private set; }
-        public ICommand OperatorButtonCommand { get; private set; }
-        public ICommand ResultButtonCommand { get; private set; }
-        public ICommand ClearButtonCommand { get; private set; }
-        public ICommand ShowHistoryCommand { get; private set; }
-      
-      
+        #endregion
+
+        #region 생성자
         public CalculatorViewModel()
         {
             NumberButtonCommand = new RelayCommand(NumberButtonCommandExecute);
             OperatorButtonCommand = new RelayCommand(OperatorButtonCommandExecute);
             ResultButtonCommand = new RelayCommand(ResultButtonCommandExecute);
             ClearButtonCommand = new RelayCommand(ClearButtonCommandExecute);
-            
-         
-        }
 
-        
+        }
+        #endregion
+
+        #region 메서드
         protected string ConvertToPostfix(string infixExpression)
         {
             Dictionary<string, int> precedence = new Dictionary<string, int>
@@ -202,7 +169,7 @@ namespace Calculator_jyw_
         protected DerivedCalculatorVM CalculatePostfix_(string postfixExpression)
         {
             Stack<double> stack = new Stack<double>();
-            
+
 
             string[] tokens = postfixExpression.Split(' ');
 
@@ -219,7 +186,7 @@ namespace Calculator_jyw_
                     DerivedCalculatorVM operand1 = new DerivedCalculatorVM(stack.Pop());
                     DerivedCalculatorVM operand2 = new DerivedCalculatorVM(stack.Pop());
                     DerivedCalculatorVM result = PerformOperation_(operand1, operand2, token);
-                     
+
                     stack.Push(result.operand);
                 }
             }
@@ -231,14 +198,14 @@ namespace Calculator_jyw_
 
         }
         protected DerivedCalculatorVM PerformOperation_(DerivedCalculatorVM operand1, DerivedCalculatorVM operand2, string operation)
-                {
-                    switch (operation)
-                    {
-                        case "+": return operand1 + operand2;
-                        case "-": return operand1 - operand2;                
-                        default: throw new ArgumentException("Invalid operation: " + operation);
-                    }
-                }
+        {
+            switch (operation)
+            {
+                case "+": return operand1 + operand2;
+                case "-": return operand1 - operand2;
+                default: throw new ArgumentException("Invalid operation: " + operation);
+            }
+        }
 
         protected double PerformOperation(double operand1, double operand2, string operation)
         {
@@ -253,7 +220,7 @@ namespace Calculator_jyw_
             }
         }
 
-        
+
 
 
 
@@ -285,7 +252,7 @@ namespace Calculator_jyw_
             }
 
         }
-      
+
         /*
         * @brief 연산자 버튼을 누르면 resulttextbox에 피연산자와 연산자가 입력됩니다.  
         * @param parameter: 누른 연산자의 값
@@ -320,7 +287,7 @@ namespace Calculator_jyw_
         * @warning 없음
         */
 
-  
+
 
         protected void ClearButtonCommandExecute(object parameter)
         {
@@ -346,7 +313,7 @@ namespace Calculator_jyw_
             ResultText = $"{InputText}{ " = " }";
             string expression = InputText;
 
-            
+
             InputText = CalculatePostfix(ConvertToPostfix(expression)).ToString();
             string result = inputText;
             CalculationEntry entry = new CalculationEntry
@@ -371,11 +338,55 @@ namespace Calculator_jyw_
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-
-
+        #endregion
 
         #region [중첩된 클래스]
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public class CalculationEntry : INotifyPropertyChanged
+        {
+            private string expression;
+            private string result;
+
+            public string Expression
+            {
+                get { return expression; }
+                set
+                {
+                    expression = value;
+                    OnPropertyChanged(nameof(Expression));
+                }
+            }
+
+            public string Result
+            {
+                get { return result; }
+                set
+                {
+                    result = value;
+                    OnPropertyChanged(nameof(Result));
+                }
+            }
+            private CalculationEntry selectedEntry;
+
+            public CalculationEntry SelectedEntry
+            {
+                get { return selectedEntry; }
+                set
+                {
+                    selectedEntry = value;
+                    OnPropertyChanged(nameof(SelectedEntry));
+                }
+            }
+            // INotifyPropertyChanged 이벤트 정의
+            public event PropertyChangedEventHandler PropertyChanged;
+
+            // PropertyChanged 이벤트 호출 메서드
+            protected virtual void OnPropertyChanged(string propertyName)
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
         #endregion
 
 
